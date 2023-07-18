@@ -1,5 +1,6 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import { useParams} from 'react-router-dom';
+import axios from 'axios';
 
 import disorderAPi from "../api/disorderApi"
 
@@ -7,16 +8,35 @@ import "../style/Disorder.css";
 
 const Disorder = () => {
     const {disorder} = useParams();
+    const [mentalDisorders, setMentalDisorders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get('/mentalDisorderDetails');
+          const data = response.data.data;
+          setMentalDisorders(data);
+        } catch (error) {
+          setError('Error fetching data');
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchData();
+  }, []);
 
   return (
     <>
    <div className="content">
     {
-        disorderAPi.map((item)=>{
+        mentalDisorders.map((item)=>{
             if(item.name == disorder)
             {
             return(
-                    <div className="disorder_card" style={{color:'white'}}>
+                    <div className="disorder_card" style={{color:'white',fontSize:'2rem'}}>
                         <h1 className="name">{item.name}</h1>
                         <center>
                             <img src={item.imageUrl} alt="" />
